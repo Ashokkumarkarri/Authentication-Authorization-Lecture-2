@@ -12,6 +12,9 @@ class LoginForm extends Component {
     const {history} = this.props
     history.replace('/')
   }
+  onSubmitFailure = errorMsg => {
+    console.log(errorMsg)
+  }
 
   submitForm = async event => {
     event.preventDefault()
@@ -27,6 +30,8 @@ class LoginForm extends Component {
     console.log(data)
     if (response.ok === true) {
       this.onSubmitSuccess()
+    } else {
+      this.onSubmitFailure(data.error_msg) // here ".error_msg" for this key we will get the error message.
     }
   }
 
