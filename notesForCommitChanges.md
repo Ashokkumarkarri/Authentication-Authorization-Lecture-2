@@ -40,3 +40,61 @@ else {
 ##### In the next commit, we will render this error message on the login page UI for better user feedback.
 
 ---
+
+
+## ✅ Commit 2: Rendering the Error to the UI
+
+### 📌 Goal:
+To display the error message on the login page when the login request fails.
+
+---
+
+### 🧠 Step 1: Declare state variables
+
+We add the following to `state`:
+
+```js
+this.state = {
+  password: '',
+  showSubmitError: false, // Initially false to hide the error message
+  errorMsg: '',           // Will hold the actual error text
+}
+```
+
+#### 🧠 Step 2: Update state on failure
+We modify the onSubmitFailure function to update the state:
+
+```js
+
+onSubmitFailure = errorMsg => {
+  console.log(errorMsg)
+  this.setState({
+    showSubmitError: true,
+    errorMsg: errorMsg,
+  })
+}
+
+```
+
+#### 🧠 Step 3: Extract values in render
+Inside the render() method:
+
+
+```js
+const { showSubmitError, errorMsg } = this.state
+
+```
+
+####  🧠 Step 4: Conditionally render the error message
+We show the error only if showSubmitError is true:
+
+```js
+{showSubmitError && <p className="error-message">*{errorMsg}</p>}
+
+```
+
+🔜 Next Commit:
+We will explore:
+    Why we need to store the JWT (JSON Web Token)
+    Where and how to store it securely
+---
