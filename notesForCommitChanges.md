@@ -319,3 +319,137 @@ if (jwtToken === undefined) {
 ---
 
 In the next commit, we will handle **logout functionality**.
+---
+
+## ✅ Commit 5: Adding Logout Functionality
+
+Let's add **logout functionality** and handle **redirections**.
+
+### 🎯 What should happen?
+When we click the logout button:
+- The JWT should be deleted from cookies
+- The user should be redirected to the login page
+
+---
+
+### 🔘 Logout Button Logic
+
+In the Header, we have a Logout button.  
+We will add an `onClick` function called `onClickLogout()`.
+
+In this function, we will write logic to delete the JWT.
+
+```js
+Cookies.remove('CookieName')
+```
+
+Example:
+```js
+import Cookies from 'js-cookie'
+Cookies.remove('jwt_token')
+```
+
+---
+
+### 🔁 Now we need to redirect
+#### 🔁 Why we can't use `<Redirect />` in all places?
+
+In React Router:
+
+- The `<Redirect />` component is used **only inside the `render()` method** of a class component.
+- It **stops rendering the current UI** and navigates to another route (like going to `/login` or `/home`).
+
+#### ✅ Example use of `<Redirect />` inside `render()`:
+```js
+if (userNotLoggedIn) {
+  return <Redirect to="/login" />
+}
+```
+
+#### ❌ But outside `render()`, for example inside a function, we can't use `<Redirect />`.
+
+---
+
+#### 🧭 What do we use instead?
+
+We use the **`history` object**.
+
+React Router gives us a `history` object that has helpful methods like:
+
+- `history.push('/some-path')` → Goes to a new route
+- `history.replace('/some-path')` → Replaces the current route with a new one
+
+#### ✅ You can use these inside any function like `onClick`, `onSubmit`, etc.
+
+```js
+const onClickLogout = () => {
+  history.replace('/login')
+}
+```
+
+---
+
+### ⚠️ The catch: Who gets the `history` prop?
+
+React Router **automatically provides** the `history` prop **only to components** that are directly connected to a route.
+
+#### ✅ For example:
+```js
+<Route exact path="/home" component={Home} />
+```
+In the `Home` component, you can directly use:
+```js
+const { history } = this.props
+```
+
+#### ❌ But for components **not directly connected to a route** (like a `Header` component inside `Home`), the `history` prop is **not available** by default.
+
+---
+
+### 🛠️ How to fix this? Use `withRouter`
+
+React Router gives us a helper called `withRouter`.
+
+If you wrap your component with `withRouter`, it gives your component access to the `history`, `location`, and `match` props — even if it's not directly used in a route.
+
+#### ✅ Example:
+
+```js
+import { withRouter } from 'react-router-dom'
+
+const Header = props => {
+  const onClickLogout = () => {
+    const { history } = props
+    history.replace('/login')
+  }
+  ...
+}
+
+export default withRouter(Header)
+```
+
+This way, even if `Header` is not used in a `<Route />`, it can still use the `history` prop to redirect.
+
+
+
+---
+
+### 🔧 In Header Code:
+
+```js
+import {Link, withRouter} from 'react-router-dom' // imported withRouter
+import Cookies from 'js-cookie'
+
+const onClickLogout = () => {
+  // this function deletes the JWT and redirects to login page
+  const {history} = props
+  Cookies.remove('jwt_token')
+  history.replace('/login')
+}
+
+export default withRouter(Header) 
+// Header is used inside Home component, so to access history object, we wrapped Header with withRouter
+```
+
+---
+
