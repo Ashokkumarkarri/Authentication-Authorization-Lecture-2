@@ -93,10 +93,11 @@ We show the error only if showSubmitError is true:
 
 ```
 
-🔜 Next Commit:
+`🔜 Next Commit:`
 We will explore:
-    Why we need to store the JWT (JSON Web Token)
-    Where and how to store it securely
+  Why we need to store the JWT (JSON Web Token)
+  Where and how to store it securely
+
 ---
 
 
@@ -225,3 +226,96 @@ onSubmitSuccess = jwtToken => {
 
 🔜 Next Commit:
 We will learn how to handle route redirection based on whether the JWT exists or not.
+
+---
+
+## ✅ Commit 4: Handling Route Redirections
+
+Now we want to implement:
+
+- If the user is **already logged in** and tries to access the **login route**, he should be **redirected to the home page**.
+- If the user is **not logged in** and tries to access the **home page**, he should be **redirected to the login page**.
+
+---
+
+### 🔍 How to achieve this?
+
+We need to check whether the user has the JWT token or not.  
+If the token exists, redirect to home page.  
+If not, redirect to login page.
+
+---
+
+### 📌 Syntax to get JWT from cookies:
+```js
+Cookies.get('cookieName')
+```
+Returns **undefined** if the cookie doesn't exist or has expired.
+
+---
+
+### 🔁 To redirect in React Router:
+
+```js
+import {Redirect} from 'react-router-dom'
+
+<Redirect to="PATH" />
+```
+
+Whenever you want to **redirect to another path**,  
+**Redirect Component** can be used inside the render method.
+
+---
+
+### 🧱 In our code:
+
+```js
+import {Redirect} from 'react-router-dom' // import
+
+const jwtToken = Cookies.get('jwt_token') // getting the JWT from cookies
+
+if (jwtToken !== undefined) {
+  // if token exists, redirect to home
+  return <Redirect to="/" />
+}
+```
+
+---
+
+### 🔄 Redirect Component vs History Methods
+
+- ✅ **Use Redirect Component** when you want to stop showing the current UI and move to another route  
+  👉 Example: Inside `render()` method of class components
+
+- ✅ **Use history.push() or history.replace()** in places like `onClick`, `onSubmit`, etc.
+
+📝 **Note:** Behind the scenes, the `Redirect` component uses the `history.push()` or `history.replace()` method.
+
+---
+
+### 🚫 Unauthenticated Scenario
+
+If the user is **not logged in** and tries to access the **home route**,  
+we have to redirect the user to the **login route**.
+
+So, check if the JWT token is available.  
+If it's not available, redirect to login.
+
+---
+
+### 🧱 Code in Home Component:
+
+```js
+import Cookies from 'js-cookie'
+import {Redirect} from 'react-router-dom'
+
+const jwtToken = Cookies.get('jwt_token')
+
+if (jwtToken === undefined) {
+  return <Redirect to="login" />
+}
+```
+
+---
+
+In the next commit, we will handle **logout functionality**.

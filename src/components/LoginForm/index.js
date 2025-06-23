@@ -1,5 +1,6 @@
 import {Component} from 'react'
 import Cookies from 'js-cookie' // Imported the 3 rd party package
+import {Redirect} from 'react-router-dom' // import
 
 import './index.css'
 
@@ -91,6 +92,11 @@ class LoginForm extends Component {
 
   render() {
     const {showSubmitError, errorMsg} = this.state
+    const jwtToken = Cookies.get('jwt_token') // we are storing JWT, if jwt is not there then we will get undeine
+    if (jwtToken !== undefined) {
+      // if jwtToken is not equal to undefine, ie jwt is there, then redirect to home
+      return <Redirect to="/" />
+    }
     return (
       <div className="login-form-container">
         <img
