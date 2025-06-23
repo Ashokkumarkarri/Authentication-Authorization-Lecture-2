@@ -1,4 +1,5 @@
 import {Component} from 'react'
+import Cookies from 'js-cookie' // Imported the 3 rd party package
 
 import './index.css'
 
@@ -10,15 +11,17 @@ class LoginForm extends Component {
     errorMsg: '',
   }
 
-  onSubmitSuccess = () => {
+  onSubmitSuccess = jwtToken => {
+    Cookies.set('jwt_token', jwtToken, {expires: 30}) // Store the JWT token in browser cookies using js-cookie, with a 30-day expiry.
     const {history} = this.props
     history.replace('/')
   }
+
   onSubmitFailure = errorMsg => {
     console.log(errorMsg)
     this.setState({
       showSubmitError: true,
-      errorMsg: errorMsg,
+      errorMsg,
     })
   }
 
@@ -34,8 +37,9 @@ class LoginForm extends Component {
     const response = await fetch(url, options)
     const data = await response.json()
     console.log(data)
+    // if the login API is sucess it will give a repsonse, in that response, server will send JWT
     if (response.ok === true) {
-      this.onSubmitSuccess()
+      this.onSubmitSuccess(data.jwt_token) // Calling the success handler with the JWT token received from the Login API
     } else {
       this.onSubmitFailure(data.error_msg) // here ".error_msg" for this key we will get the error message.
     }
